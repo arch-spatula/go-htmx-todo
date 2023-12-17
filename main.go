@@ -1,8 +1,9 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // 아래 코드 사용 금지
@@ -11,17 +12,18 @@ import (
 // sqlite 데이터 베이스
 
 func main() {
-
-	http.HandleFunc("/todo", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		body := make(map[string]string)
-		body["text"] = "hello"
-		res, err := json.Marshal(body)
-		if err != nil {
-			panic(err)
-		}
-		w.Write(res)
+	r := gin.Default()
+	r.LoadHTMLGlob("templates/*")
+	r.GET("/", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "index.tmpl", gin.H{
+			"title": "hello htmx",
+		})
+	})
+	r.GET("/ping", func(ctx *gin.Context) {
+		ctx.JSON(http.StatusOK, gin.H{
+			"msg": "pong",
+		})
 	})
 
-	http.ListenAndServe(":5000", nil)
+	r.Run()
 }
