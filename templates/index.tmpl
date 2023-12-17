@@ -1,8 +1,28 @@
-<html>
+<!DOCTYPE html>
+<html lang="ko">
   <head>
-    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://unpkg.com/htmx.org@1.9.9"
+      integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX"
+      crossorigin="anonymous"
+    ></script>
+    <title>go htmx todo</title>
   </head>
-	<h1>
-		{{ .title }}
-	</h1>
+  <body>
+    <h1>{{ .heading }}</h1>
+    <form >
+      <input placeholder="todo" type="text" name="title" />
+      <input placeholder="todo" type="text" name="content" />
+      <button hx-swap="beforeend" hx-target="#todo" hx-trigger="click" hx-post="/todo">
+        add
+      </button>
+    </form>
+    <ul id="todo">
+      {{ range .todos }}
+        {{ . }}
+      {{ end }}
+    </ul>
+  </body>
 </html>
