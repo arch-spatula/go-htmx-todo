@@ -1,0 +1,10 @@
+<li id="{{ .Id }}" hx-target="closest li" hx-swap="outerHTML">
+  <p>{{ .Id }}</p>
+  <form >
+    <input placeholder="todo" type="text" name="title" />
+    <input placeholder="todo" type="text" name="content" />
+    <input type="checkbox" {{ if .Done }}checked{{ end }} />
+    <button>저장</button>
+    <button hx-delete="/todo/{{ .Id }}" hx-trigger="click" >취소</button>
+  </form>
+</li>

@@ -1,5 +1,8 @@
-<li>
-  <h2>{{ .title }}</h2>
-  <p>{{ .content }}</p>
-  <input checked />
+<li id="{{ .Id }}" hx-target="closest li" hx-swap="outerHTML">
+  <p>{{ .Id }}</p>
+  <h2>{{ .Title }}</h2>
+  <p>{{ .Context }}</p>
+  <input type="checkbox" {{ if .Done }}checked{{ end }} />
+  <button>편집</button>
+  <button hx-delete="/todo/{{ .Id }}" hx-trigger="click" >삭제</button>
 </li>
