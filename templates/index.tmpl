@@ -24,7 +24,7 @@
         <li id="{{ .Id }}" hx-target="closest li" hx-swap="outerHTML">
           <p>{{ .Id }}</p>
           <h2>{{ .Title }}</h2>
-          <p>{{ .Context }}</p>
+          <p>{{ .Content }}</p>
           <input type="checkbox" {{ if .Done }}checked{{ end }} />
           <button hx-get="/todo/edit/{{ .Id }}" hx-trigger="click">편집</button>
           <button hx-delete="/todo/{{ .Id }}" hx-trigger="click" >삭제</button>

@@ -16,7 +16,7 @@ import (
 type Todo struct {
 	Id      int    `form:"id" gorm:"primaryKey"`
 	Title   string `form:"title"`
-	Context string `form:"content"`
+	Content string `form:"content"`
 	Done    bool   `form:"done"`
 }
 
@@ -56,17 +56,17 @@ func main() {
 		if ctx.ShouldBind(&todo) == nil {
 			log.Print(todo.Id)
 			log.Print(todo.Title)
-			log.Print(todo.Context)
+			log.Print(todo.Content)
 			log.Print(todo.Done)
 		}
 
-		db.Create(&Todo{Title: todo.Title, Context: todo.Context, Done: todo.Done})
+		db.Create(&Todo{Title: todo.Title, Content: todo.Content, Done: todo.Done})
 
 		newId += 1
 
 		ctx.HTML(http.StatusCreated, "todo-item.tmpl", gin.H{
 			"Title":   todo.Title,
-			"Content": todo.Context,
+			"Content": todo.Content,
 			"Id":      newId,
 			"Done":    todo.Done,
 		})
@@ -83,37 +83,72 @@ func main() {
 		}
 
 		var todo Todo
+		if ctx.ShouldBind(&todo) == nil {
+			log.Print(idInt)
+			log.Print(todo.Title)
+			log.Print(todo.Content)
+			log.Print(todo.Done)
+		}
+
+		ctx.HTML(http.StatusOK, "edit-item.tmpl", gin.H{
+			"Title":   todo.Title,
+			"Content": todo.Content,
+			"Id":      idInt,
+			"Done":    todo.Done,
+		})
+	})
+
+	// 취소
+	r.GET("/todo/cancel/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
+			return
+		}
+
+		var todo Todo
 		result := db.First(&todo, idInt)
 		if result.Error != nil {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Todo not found"})
 			return
 		}
 
-		ctx.HTML(http.StatusOK, "edit-item.tmpl", gin.H{
+		ctx.HTML(http.StatusOK, "todo-item.tmpl", gin.H{
 			"Title":   todo.Title,
-			"Content": todo.Context,
-			"Id":      newId,
+			"Content": todo.Content,
+			"Id":      todo.Id,
 			"Done":    todo.Done,
 		})
 	})
 
 	// 갱신(저장)
-	r.PATCH("/todo/:id", func(ctx *gin.Context) {
-		//
+	r.PUT("/todo/:id", func(ctx *gin.Context) {
+		id := ctx.Param("id")
+
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid todo ID"})
+			return
+		}
+
 		var todo Todo
 		if ctx.ShouldBind(&todo) == nil {
 			log.Print(todo.Id)
 			log.Print(todo.Title)
-			log.Print(todo.Context)
+			log.Print(todo.Content)
 			log.Print(todo.Done)
 		}
 
-		// db.Update( , &Todo{Title: todo.Title, Context: todo.Context, Done: todo.Done, Id: todo.Id})
+		// Title: todo.Title, Content: todo.Content, Done: todo.Done
+		// db.Where("Id = ", idInt).Update(Todo{Title: todo.Title, Content: todo.Content, Done: todo.Done})
+		db.Save(&Todo{Id: idInt, Title: todo.Title, Content: todo.Content, Done: todo.Done})
 
 		ctx.HTML(http.StatusCreated, "todo-item.tmpl", gin.H{
 			"Title":   todo.Title,
-			"Content": todo.Context,
-			"Id":      newId,
+			"Content": todo.Content,
+			"Id":      idInt,
 			"Done":    todo.Done,
 		})
 	})
